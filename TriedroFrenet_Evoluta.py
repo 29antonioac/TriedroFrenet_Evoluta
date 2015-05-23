@@ -16,7 +16,6 @@ vec4 = GLfloat_4
 
 tStart = t0 = time.time()
 frames = 0
-rotationRate = 1.01
 vertices = []
 tangentes = []
 normales = []
@@ -41,6 +40,7 @@ vertice_actual = 0
 direccion = 1
 velocidad = 0
 vertice_animado = 0
+velocidad_maxima = 0
 
 show_frames = False
 dibujoEvoluta = False
@@ -85,7 +85,7 @@ def framerate():
 
 def dibujarEjes():
 
-    long_ejes = 10.0
+    long_ejes = 30.0
 
     # establecer modo de dibujo a lineas (podría estar en puntos)
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -184,13 +184,10 @@ def ayuda():
     strings_ayuda = ["N y M controlan la animación","E dibuja la evoluta"]
 
     num_lineas = 0
-    print(ventana_tam_x,ventana_tam_y)
     for s in strings_ayuda:
         glWindowPos2i(10, ventana_tam_y - 15*(num_lineas + 1))
         for c in s:
             glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(c));
-            print(c,end="")
-        print()
         num_lineas += 1
 
     glMatrixMode(GL_MODELVIEW)
@@ -254,8 +251,8 @@ def teclaNormal(k, x, y):
             velocidad = 0
     elif k == b'm':
         velocidad += 0.1
-        if velocidad > 1.5:
-            velocidad = 1.5
+        if velocidad > velocidad_maxima:
+            velocidad = velocidad_maxima
     elif k == b'r':
         camara_angulo_x = camara_angulo_y = 0.0
     elif k == b'q' or k == b'Q' or ord(k) == 27: # Escape
@@ -338,7 +335,7 @@ def inicializar():
         print("No has metido 6 argumentos: tienes",len(sys.argv))
         exit(-1)
 
-    global vertices,evoluta, x_t, y_t, z_t
+    global vertices,evoluta, x_t, y_t, z_t, velocidad_maxima
     t = symbols('t')
 
     x_t         = sympify(sys.argv[1])
@@ -347,22 +344,32 @@ def inicializar():
     num_puntos  = int(sys.argv[4])
     inicio      = int(sys.argv[5])
     final       = int(sys.argv[6])
+    velocidad_maxima = num_puntos / 80
 
     longitud = final - inicio
     incremento = longitud / (num_puntos - 1)
 
     curva = Matrix([x_t,y_t,z_t])
 
-    # derivada_curva = Matrix([curva[0].diff(t),curva[1].diff(t),curva[2].diff(t)])
+    print("Calculando...",end="",flush=True)
+
     derivada_curva = curva.diff(t)
     derivada2_curva = derivada_curva.diff(t)
-    # derivada2_curva = Matrix([derivada_curva[0].diff(t),derivada_curva[1].diff(t),derivada_curva[2].diff(t)])
+
+    print("30%...",end="",flush=True)
 
     T = simplify(derivada_curva.normalized())
     B = simplify(derivada_curva.cross(derivada2_curva).normalized())
+
+    print("60%...",end="",flush=True)
+
     N = simplify(B.cross(T))
 
+    print("90%...",end="",flush=True)
     curvatura = simplify((derivada_curva.cross(derivada2_curva).norm()) / (derivada_curva.norm() ** 3))
+
+    print("100%!\n",flush=True)
+
     print("Tangente: ",T)
     print("\nNormal: ",N)
     print("\nBinormal: ",B)
@@ -376,11 +383,7 @@ def inicializar():
         binormales.append([B[0].subs(t,t_var),B[1].subs(t,t_var),B[2].subs(t,t_var)])
 
         vertice_evoluta = curva.subs(t,t_var) + N.subs(t,t_var)/curvatura.subs(t,t_var)
-        # print("curva: ",curva.subs(t,t_var),"+",N.subs(t,t_var),"/",curvatura.subs(t,t_var))
         evoluta.append([vertice_evoluta[0],vertice_evoluta[1],vertice_evoluta[2]])
-
-    # for e in evoluta:
-    #     print(e)
 
 
     glEnable(GL_NORMALIZE)
