@@ -186,7 +186,7 @@ def ayuda():
     num_lineas = 0
     print(ventana_tam_x,ventana_tam_y)
     for s in strings_ayuda:
-        glWindowPos2i(ventana_tam_x / 2, ventana_tam_y / 2)
+        glWindowPos2i(10, ventana_tam_y - 15*(num_lineas + 1))
         for c in s:
             glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(c));
             print(c,end="")
