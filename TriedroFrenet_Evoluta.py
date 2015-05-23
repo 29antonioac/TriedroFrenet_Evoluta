@@ -4,9 +4,10 @@
 import OpenGL
 OpenGL.ERROR_ON_COPY = True
 from OpenGL.GL import *
+from OpenGL.GLU import gluOrtho2D
 from OpenGL.GLUT import *
 import sys, time
-from math import sin,cos,sqrt,pi
+# from math import sin,cos,sqrt,pi
 from sympy.core.sympify import sympify
 from sympy import *
 from OpenGL.constants import GLfloat
@@ -42,6 +43,7 @@ velocidad = 0
 vertice_animado = 0
 
 show_frames = False
+dibujoEvoluta = False
 
 
 def fijarProyeccion():
@@ -152,12 +154,49 @@ def dibujarObjetos():
 
     glEnd()
 
-    # Evoluta
-    glBegin(GL_LINE_STRIP)
-    glColor3f(0.0,1.0,0.0)
-    for v in evoluta:
-        glVertex3f(v[0],v[1],v[2])
-    glEnd()
+    if dibujoEvoluta:
+        # Evoluta
+        glBegin(GL_LINE_STRIP)
+        glColor3f(1.0,0.0,1.0)
+        for v in evoluta:
+            glVertex3f(v[0],v[1],v[2])
+        glEnd()
+
+        # Línea que une evoluta y gráfica
+        glBegin(GL_LINES)
+        glColor3f(0.0,1.0,0.0)
+
+        glVertex3f(vertices[vertice_actual][0],vertices[vertice_actual][1],vertices[vertice_actual][2])
+        glVertex3f(evoluta[vertice_actual][0],evoluta[vertice_actual][1],evoluta[vertice_actual][2])
+
+        glEnd()
+
+def ayuda():
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    gluOrtho2D(0.0, ventana_tam_x, 0.0, ventana_tam_y)
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+    glColor3f(1.0, 0.0, 0.0)
+
+    strings_ayuda = ["N y M controlan la animación","E dibuja la evoluta"]
+
+    num_lineas = 0
+    print(ventana_tam_x,ventana_tam_y)
+    for s in strings_ayuda:
+        glWindowPos2i(ventana_tam_x / 2, ventana_tam_y / 2)
+        for c in s:
+            glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(c));
+            print(c,end="")
+        print()
+        num_lineas += 1
+
+    glMatrixMode(GL_MODELVIEW)
+    glPopMatrix()
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
 
 
 
@@ -172,6 +211,8 @@ def dibujar():
     dibujarEjes()
 
     dibujarObjetos()
+
+    ayuda()
 
     glutSwapBuffers()
 
@@ -199,12 +240,14 @@ def animar():
 
 # Teclas normales: para cambiar escala y velocidad
 def teclaNormal(k, x, y):
-    global frustum_factor_escala, vertice_actual, velocidad, camara_angulo_x, camara_angulo_y
+    global frustum_factor_escala, vertice_actual, velocidad, camara_angulo_x, camara_angulo_y, dibujoEvoluta
 
     if k == '+':
         frustum_factor_escala *= 1.05
     elif k == '-':
         frustum_factor_escala /= 1.05
+    elif k == b'e':
+        dibujoEvoluta = not dibujoEvoluta
     elif k == b'n':
         velocidad -= 0.1
         if velocidad < 0:
@@ -241,6 +284,8 @@ def teclaEspecial(k, x, y):
 
 # Nuevo tamaño de ventana
 def cambioTamanio(width, height):
+    global ventana_tam_x,ventana_tam_y
+
     ventana_tam_x = width
     ventana_tam_y = height
 
@@ -313,11 +358,15 @@ def inicializar():
     derivada2_curva = derivada_curva.diff(t)
     # derivada2_curva = Matrix([derivada_curva[0].diff(t),derivada_curva[1].diff(t),derivada_curva[2].diff(t)])
 
-    T = derivada_curva.normalized()
-    B = derivada_curva.cross(derivada2_curva).normalized()
-    N = B.cross(T)
+    T = simplify(derivada_curva.normalized())
+    B = simplify(derivada_curva.cross(derivada2_curva).normalized())
+    N = simplify(B.cross(T))
 
-    curvatura = (derivada_curva.cross(derivada2_curva).norm()) / (derivada_curva.norm() ** 3)
+    curvatura = simplify((derivada_curva.cross(derivada2_curva).norm()) / (derivada_curva.norm() ** 3))
+    print("Tangente: ",T)
+    print("\nNormal: ",N)
+    print("\nBinormal: ",B)
+    print("\nCurvatura: ", curvatura)
 
     for indice_punto in range(num_puntos):
         t_var = inicio + indice_punto*incremento
@@ -327,7 +376,12 @@ def inicializar():
         binormales.append([B[0].subs(t,t_var),B[1].subs(t,t_var),B[2].subs(t,t_var)])
 
         vertice_evoluta = curva.subs(t,t_var) + N.subs(t,t_var)/curvatura.subs(t,t_var)
+        # print("curva: ",curva.subs(t,t_var),"+",N.subs(t,t_var),"/",curvatura.subs(t,t_var))
         evoluta.append([vertice_evoluta[0],vertice_evoluta[1],vertice_evoluta[2]])
+
+    # for e in evoluta:
+    #     print(e)
+
 
     glEnable(GL_NORMALIZE)
     glEnable(GL_MULTISAMPLE_ARB);
