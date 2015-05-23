@@ -136,24 +136,29 @@ def dibujarObjetos():
 
     glEnd()
 
-    # Plano osculador (tiene un pequeño bug)
+    # Plano osculador
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-    # glBegin(GL_POLYGON)
-    # glBegin(GL_QUADS)
+
     glBegin(GL_TRIANGLES)
     glColor4f(0.0,1.0,1.0,0.1)
 
     glVertex3f(vertices[vertice_actual][0], vertices[vertice_actual][1],    vertices[vertice_actual][2])
     glVertex3f(vertices[vertice_actual][0] + tangentes[vertice_actual][0],  vertices[vertice_actual][1] +   tangentes[vertice_actual][1],   vertices[vertice_actual][2] +   tangentes[vertice_actual][2])
     glVertex3f(vertices[vertice_actual][0] + normales[vertice_actual][0],   vertices[vertice_actual][1] +   normales[vertice_actual][1],    vertices[vertice_actual][2] +   normales[vertice_actual][2])
-    # glVertex3f(vertices[vertice_actual][0] + normales[vertice_actual][0] +  tangentes[vertice_actual][0],   vertices[vertice_actual][1] +   normales[vertice_actual][1] +   tangentes[vertice_actual][1], vertices[vertice_actual][2] + normales[vertice_actual][2] + tangentes[vertice_actual][2])
-    # glVertex3f(vertices[vertice_actual][0], vertices[vertice_actual][1],    vertices[vertice_actual][2])
+
     glVertex3f(vertices[vertice_actual][0] + tangentes[vertice_actual][0],  vertices[vertice_actual][1] +   tangentes[vertice_actual][1],   vertices[vertice_actual][2] +   tangentes[vertice_actual][2])
     glVertex3f(vertices[vertice_actual][0] + normales[vertice_actual][0],   vertices[vertice_actual][1] +   normales[vertice_actual][1],    vertices[vertice_actual][2] +   normales[vertice_actual][2])
     glVertex3f(vertices[vertice_actual][0] + normales[vertice_actual][0] +  tangentes[vertice_actual][0],   vertices[vertice_actual][1] +   normales[vertice_actual][1] +   tangentes[vertice_actual][1], vertices[vertice_actual][2] + normales[vertice_actual][2] + tangentes[vertice_actual][2])
 
-
     glEnd()
+
+    # Evoluta
+    glBegin(GL_LINE_STRIP)
+    glColor3f(0.0,1.0,0.0)
+    for v in evoluta:
+        glVertex3f(v[0],v[1],v[2])
+    glEnd()
+
 
 
 # Función de dibujado
@@ -288,7 +293,7 @@ def inicializar():
         print("No has metido 6 argumentos: tienes",len(sys.argv))
         exit(-1)
 
-    global vertices, x_t, y_t, z_t
+    global vertices,evoluta, x_t, y_t, z_t
     t = symbols('t')
 
     x_t         = sympify(sys.argv[1])
@@ -303,13 +308,16 @@ def inicializar():
 
     curva = Matrix([x_t,y_t,z_t])
 
-    derivada_curva = Matrix([curva[0].diff(t),curva[1].diff(t),curva[2].diff(t)])
-
-    derivada2_curva = Matrix([derivada_curva[0].diff(t),derivada_curva[1].diff(t),derivada_curva[2].diff(t)])
+    # derivada_curva = Matrix([curva[0].diff(t),curva[1].diff(t),curva[2].diff(t)])
+    derivada_curva = curva.diff(t)
+    derivada2_curva = derivada_curva.diff(t)
+    # derivada2_curva = Matrix([derivada_curva[0].diff(t),derivada_curva[1].diff(t),derivada_curva[2].diff(t)])
 
     T = derivada_curva.normalized()
     B = derivada_curva.cross(derivada2_curva).normalized()
     N = B.cross(T)
+
+    curvatura = (derivada_curva.cross(derivada2_curva).norm()) / (derivada_curva.norm() ** 3)
 
     for indice_punto in range(num_puntos):
         t_var = inicio + indice_punto*incremento
@@ -317,6 +325,9 @@ def inicializar():
         tangentes.append([T[0].subs(t,t_var),T[1].subs(t,t_var),T[2].subs(t,t_var)])
         normales.append([N[0].subs(t,t_var),N[1].subs(t,t_var),N[2].subs(t,t_var)])
         binormales.append([B[0].subs(t,t_var),B[1].subs(t,t_var),B[2].subs(t,t_var)])
+
+        vertice_evoluta = curva.subs(t,t_var) + N.subs(t,t_var)/curvatura.subs(t,t_var)
+        evoluta.append([vertice_evoluta[0],vertice_evoluta[1],vertice_evoluta[2]])
 
     glEnable(GL_NORMALIZE)
     glEnable(GL_MULTISAMPLE_ARB);
@@ -336,7 +347,7 @@ if __name__ == '__main__':
 
     glutInitWindowPosition(0, 0)
     glutInitWindowSize(ventana_tam_x, ventana_tam_y)
-    glutCreateWindow("Curvas y Triedro de Frenet")
+    glutCreateWindow("Curvas, triedro de Frenet y evoluta")
     inicializar()
 
     glutDisplayFunc(dibujar)
