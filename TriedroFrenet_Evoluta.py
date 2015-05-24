@@ -342,16 +342,17 @@ def inicializar():
     y_t         = sympify(sys.argv[2])
     z_t         = sympify(sys.argv[3])
     num_puntos  = int(sys.argv[4])
-    inicio      = int(sys.argv[5])
-    final       = int(sys.argv[6])
+    inicio      = float(sys.argv[5])
+    final       = float(sys.argv[6])
+
+    print("(1/2) Calculando...",end="",flush=True)
+
     velocidad_maxima = num_puntos / 80
 
     longitud = final - inicio
     incremento = longitud / (num_puntos - 1)
 
     curva = Matrix([x_t,y_t,z_t])
-
-    print("Calculando...",end="",flush=True)
 
     derivada_curva = curva.diff(t)
     derivada2_curva = derivada_curva.diff(t)
@@ -368,14 +369,18 @@ def inicializar():
     print("90%...",end="",flush=True)
     curvatura = simplify((derivada_curva.cross(derivada2_curva).norm()) / (derivada_curva.norm() ** 3))
 
-    print("100%!\n",flush=True)
-
-    print("Tangente: ",T)
-    print("\nNormal: ",N)
-    print("\nBinormal: ",B)
-    print("\nCurvatura: ", curvatura)
+    print("100%!",flush=True)
+    print("(2/2) Insertando vértices...",end="",flush=True)
 
     for indice_punto in range(num_puntos):
+        if indice_punto == num_puntos // 4:
+            print("25%...",end="",flush=True)
+        elif indice_punto == num_puntos // 2:
+            print("50%...",end="",flush=True)
+        elif indice_punto == 3 * num_puntos // 4:
+            print("75%...",end="",flush=True)
+        elif indice_punto == num_puntos - 1:
+            print("100%!\n",flush=True)
         t_var = inicio + indice_punto*incremento
         vertices.append([curva[0].subs(t,t_var),curva[1].subs(t,t_var),curva[2].subs(t,t_var)])
         tangentes.append([T[0].subs(t,t_var),T[1].subs(t,t_var),T[2].subs(t,t_var)])
@@ -385,6 +390,11 @@ def inicializar():
         vertice_evoluta = curva.subs(t,t_var) + N.subs(t,t_var)/curvatura.subs(t,t_var)
         evoluta.append([vertice_evoluta[0],vertice_evoluta[1],vertice_evoluta[2]])
 
+
+    print("Tangente: ",T)
+    print("\nNormal: ",N)
+    print("\nBinormal: ",B)
+    print("\nCurvatura: ", curvatura)
 
     glEnable(GL_NORMALIZE)
     glEnable(GL_MULTISAMPLE_ARB);
