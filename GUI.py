@@ -6,7 +6,12 @@ import TriedroFrenet_Evoluta
 
 if __name__ == "__main__":
     # Mensaje de bienvenida
-    msgbox("Hola! Este programa dibuja una curva en R^3 junto a su Triedro de Frenet y su evoluta.", "Bienvenido", "Aceptar")
+    bienvenida = "Hola! Este programa dibuja una curva en R^3 junto a su Triedro de Frenet y su evoluta."
+    bienvenida += "\n\nPuedes usar todo tipo de funciones matemáticas gracias a Sympy."
+    bienvenida += "\n\nAlgunos ejemplos son: sin(t), cos(t), tan(t), abs(t), la potencia **, integrate(expr,liminf,limsup)..."
+    bienvenida += "\n\nEso sí, ¡escribe todo en función de t!"
+    bienvenida += "\n\nEl código (el cual es libre) se encuentra en mi perfil de GitHub @analca3"
+    msgbox(bienvenida, "Bienvenido", "Aceptar")
 
     # Condición para la ejecución de la GUI
     corriendo = False
