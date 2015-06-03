@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+
 # Curvas y Triedro de Frenet
 
 import OpenGL
