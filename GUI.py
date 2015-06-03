@@ -8,46 +8,39 @@ if __name__ == "__main__":
     # Mensaje de bienvenida
     msgbox("Hola! Este programa dibuja una curva en R^3 junto a su Triedro de Frenet y su evoluta.", "Bienvenido", "Aceptar")
 
+    # Condición para la ejecución de la GUI
     corriendo = False
     while not corriendo:
 
+        # Condición para controlar la introducción de los datos
         correcto = False
-
+        valorCampos = []
         while not correcto:
+            mensaje = "Introduce la curva a dibujar en función de t"
+            titulo = "Introduce la curva"
+            nombreCampos = ["x(t)","y(t)","z(t)","Número de muestras","Inicio del intervalo","Final del intervalo"]
+            valorCampos = multenterbox(mensaje,titulo,nombreCampos,valorCampos)
 
-            x_t = enterbox("Introduce la función x(t)", "Función x(t)")
-            if x_t is None: sys.exit(-1)
-
-            y_t = enterbox("Introduce la función y(t)", "Función y(t)")
-            if y_t is None: sys.exit(-1)
-
-            z_t = enterbox("Introduce la función z(t)", "Función z(t)")
-            if z_t is None: sys.exit(-1)
-
-            num_puntos = enterbox("Introduce el número de muestras", "Número de muestras")
-            if num_puntos is None: sys.exit(-1)
-
-            inicio = enterbox("Introduce el inicio del intervalo", "Inicio del intervalo")
-            if inicio is None: sys.exit(-1)
-
-            final = enterbox("Introduce final del intervalo", "Final del intervalo")
-            if final is None: sys.exit(-1)
-
-            if x_t is "" or y_t is "" or z_t is "" or num_puntos is "" or inicio is "" or final is "":
+            # Si se ha pulsado cancelar, salir
+            # Si todos los datos están introducidor, seguir
+            # Si no, volver a pedir datos
+            if valorCampos is None:
+                sys.exit(-1)
+            elif all(valorCampos):
+                correcto = True
+            else:
                 correcto = False
                 msgbox("Te has dejado algún dato sin introducir")
-            else:
-                correcto = True
 
         mensaje = "Confirma que los datos introducidos son correctos:"
-        mensaje += "\nx(t) = " + x_t
-        mensaje += "\ny(t) = " + y_t
-        mensaje += "\nz(t) = " + z_t
+        mensaje += "\nx(t) = " + valorCampos[0]
+        mensaje += "\ny(t) = " + valorCampos[1]
+        mensaje += "\nz(t) = " + valorCampos[2]
 
-        mensaje += "\nNúmero de muestras = " + num_puntos
+        mensaje += "\nNúmero de muestras = " + valorCampos[3]
 
-        mensaje += "\nInicio del intervalo = " + inicio
-        mensaje += "\nFinal del intervalo = " + final
+        mensaje += "\nInicio del intervalo = " + valorCampos[4]
+        mensaje += "\nFinal del intervalo = " + valorCampos[5]
 
 
         titulo = "Confirma los datos"
