@@ -1,4 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+
+# GUI para TriedroFrenet_Evoluta
 
 from easygui import *
 import sys
