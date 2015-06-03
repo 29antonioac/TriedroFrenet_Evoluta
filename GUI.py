@@ -46,11 +46,13 @@ if __name__ == "__main__":
         titulo = "Confirma los datos"
         opciones = ("Perfecto!", "Corregir")
 
-        # Muestra un diálogo de confirmación
+        # Mostrar un diálogo de confirmación
         # Si acepta, formar lista de argumentos y lanzar el programa
         # Si no, volver a pedir datos
 
         if ccbox(mensaje, titulo, opciones):
             corriendo = True
-            argumentos = ["./TriedroFrenet_Evoluta", x_t, y_t, z_t, num_puntos, inicio, final]
+
+            # Añadir el nombre del programa para que funcione igual que directamente desde la CLI
+            argumentos = ["./TriedroFrenet_Evoluta"] + valorCampos
             TriedroFrenet_Evoluta.main(argumentos)
