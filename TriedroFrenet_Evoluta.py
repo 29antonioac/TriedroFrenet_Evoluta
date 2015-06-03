@@ -334,6 +334,7 @@ def moverRaton(x,y):
 def inicializar(argumentos):
     if len(argumentos) < 7:
         print("No has metido 6 argumentos: tienes",len(argumentos))
+        print("Uso: python TriedroFrenet_Evoluta.py <x(t)> <y(t)> <z(t)> <número de puntos> <inicio> <fin>")
         exit(-1)
 
     global vertices,evoluta, x_t, y_t, z_t, velocidad_maxima
