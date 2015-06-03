@@ -5,10 +5,11 @@ import sys
 import TriedroFrenet_Evoluta
 
 if __name__ == "__main__":
+    # Mensaje de bienvenida
+    msgbox("Hola! Este programa dibuja una curva en R^3 junto a su Triedro de Frenet y su evoluta.", "Bienvenido", "Aceptar")
 
-    msgbox("Hola! Este programa dibuja una curva en R^3 junto a su Triedro de Frenet y su evoluta.")
-
-    while 1:
+    corriendo = False
+    while not corriendo:
 
         correcto = False
 
@@ -50,12 +51,13 @@ if __name__ == "__main__":
 
 
         titulo = "Confirma los datos"
-        
+        opciones = ("Perfecto!", "Corregir")
 
         # Muestra un diálogo de confirmación
         # Si acepta, formar lista de argumentos y lanzar el programa
         # Si no, volver a pedir datos
 
-        if ccbox(mensaje, titulo):
+        if ccbox(mensaje, titulo, opciones):
+            corriendo = True
             argumentos = ["./TriedroFrenet_Evoluta", x_t, y_t, z_t, num_puntos, inicio, final]
             TriedroFrenet_Evoluta.main(argumentos)
