@@ -2,6 +2,7 @@
 
 from easygui import *
 import sys
+import TriedroFrenet_Evoluta
 
 if __name__ == "__main__":
 
@@ -27,7 +28,7 @@ if __name__ == "__main__":
 
             inicio = enterbox("Introduce el inicio del intervalo", "Inicio del intervalo")
             if inicio is None: sys.exit(-1)
-            
+
             final = enterbox("Introduce final del intervalo", "Final del intervalo")
             if final is None: sys.exit(-1)
 
@@ -49,9 +50,12 @@ if __name__ == "__main__":
 
 
         titulo = "Confirma los datos"
-        falta = False
+        
 
-        if not falta and not ccbox(mensaje, titulo):     # show a Continue/Cancel dialog
-                pass  # user chose Cancel
-        else:
-                sys.exit(0)           # user chose Continue
+        # Muestra un diálogo de confirmación
+        # Si acepta, formar lista de argumentos y lanzar el programa
+        # Si no, volver a pedir datos
+
+        if ccbox(mensaje, titulo):
+            argumentos = ["./TriedroFrenet_Evoluta", x_t, y_t, z_t, num_puntos, inicio, final]
+            TriedroFrenet_Evoluta.main(argumentos)
