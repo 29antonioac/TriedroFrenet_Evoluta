@@ -338,12 +338,12 @@ def inicializar():
     global vertices,evoluta, x_t, y_t, z_t, velocidad_maxima
     t = symbols('t')
 
-    x_t         = sympify(sys.argv[1])
-    y_t         = sympify(sys.argv[2])
-    z_t         = sympify(sys.argv[3])
-    num_puntos  = int(sys.argv[4])
-    inicio      = float(sys.argv[5])
-    final       = float(sys.argv[6])
+    x_t         = sympify(argumentos[1])
+    y_t         = sympify(argumentos[2])
+    z_t         = sympify(argumentos[3])
+    num_puntos  = int(argumentos[4])
+    inicio      = float(argumentos[5])
+    final       = float(argumentos[6])
 
     print("(1/2) Calculando...",end="",flush=True)
 
@@ -408,14 +408,14 @@ def visible(vis):
         glutIdleFunc(None)
 
 
-if __name__ == '__main__':
-    glutInit(sys.argv)
+def main(argumentos):
+    glutInit(argumentos)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE | GLUT_ALPHA)
 
     glutInitWindowPosition(0, 0)
     glutInitWindowSize(ventana_tam_x, ventana_tam_y)
     glutCreateWindow("Curvas, triedro de Frenet y evoluta")
-    inicializar()
+    inicializar(argumentos)
 
     glutDisplayFunc(dibujar)
     glutReshapeFunc(cambioTamanio)
@@ -435,3 +435,6 @@ if __name__ == '__main__':
         show_frames = True
 
     glutMainLoop()
+
+if __name__ == '__main__':
+    main(sys.argv)
