@@ -330,9 +330,9 @@ def moverRaton(x,y):
         glutPostRedisplay();
 
 
-def inicializar():
-    if len(sys.argv) < 7:
-        print("No has metido 6 argumentos: tienes",len(sys.argv))
+def inicializar(argumentos):
+    if len(argumentos) < 7:
+        print("No has metido 6 argumentos: tienes",len(argumentos))
         exit(-1)
 
     global vertices,evoluta, x_t, y_t, z_t, velocidad_maxima
